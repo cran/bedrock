@@ -1,0 +1,74 @@
+
+#' Extract Data Description from Excel File
+#'
+#' Reads a documentation sheet from an Excel file and extracts variable
+#' descriptions and coding information.
+#'
+#' The function reads the specified sheet and trims trailing empty rows.
+#'
+#' If a column named `"Codes"` is present, its contents are split by
+#' line breaks and returned as a list of codes per variable, keyed by the
+#' `"Variable"` column.
+#'
+#' The Excel sheet is expected to contain at least:
+#' \itemize{
+#'   \item Variable names
+#'   \item Descriptions
+#'   \item Optional coding definitions
+#' }
+#'
+#' If the sheet does not exist or no additional sheets are present,
+#' the function returns `NULL`.
+#'
+#' @param fn character string. Path to the Excel file.
+#' @param sheet character string. Name of the documentation sheet.
+#'   Default is `"Description"`.
+#'
+#' @return
+#' a list with the following components:
+#' \itemize{
+#'   \item `desctable`: A data frame containing the description table.
+#'   \item `codes`: A named list of code definitions per variable.
+#' }
+#'
+#' @examples
+#' fn <- system.file("extdata", "example.xlsx", package = "bedrock")
+#'
+#' desc <- dataDescription(fn)
+#' desc$desctable
+#' desc$codes[["gender"]]
+#'
+#' @family label.import
+#' @concept label
+#' @concept datasets
+#' @export
+dataDescription <- function(fn, sheet = "Description") {
+
+  sheets <- excel_sheets(fn)
+
+  if (!(sheet %in% sheets) || length(sheets) <= 1) {
+    return(NULL)
+  }
+
+  d.desc <- as.data.frame(read_excel(fn, sheet = sheet))
+
+  emptyRows <- which(apply(d.desc, 1, function(x) all(is.na(x))))
+  if (length(emptyRows) > 0) {
+    d.desc <- d.desc[seq_len(min(emptyRows) - 1), , drop = FALSE]
+  }
+
+  codelist <- list()
+
+  if (!is.null(d.desc$Codes) && !is.null(d.desc$Variable)) {
+
+    tab <- d.desc[!is.na(d.desc$Codes), , drop = FALSE]
+
+    for (i in seq_len(nrow(tab))) {
+      # XML normalises CRLF to LF when the sheet is read, so both line
+      # endings must be accepted here
+      codelist[[tab$Variable[i]]] <- strsplit(tab$Codes[i], "\r?\n")[[1]]
+    }
+  }
+
+  return(list(desctable = d.desc, codes = codelist))
+}

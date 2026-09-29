@@ -1,0 +1,124 @@
+
+#' Split Data into Groups (Extended Interface)
+#'
+#' Splits a vector or object into groups defined by a factor or grouping variables.
+#' This is a wrapper around [split()] with an additional
+#' formula interface.
+#'
+#' @param x object to be split (typically a vector).
+#' @param f a factor or list of factors defining the groups (default method).
+#' @param formula a formula of the form `y ~ group` or `y ~ g1 + g2`
+#' specifying the variable to split (`y`) and the grouping variables.
+#' @param data a data frame containing the variables in the formula.
+#' @param subset optional logical expression indicating rows to include.
+#' @param na.action a function specifying how missing values are handled,
+#' passed to [model.frame()]
+#' (e.g., [na.omit()]).
+#' @param drop logical; if `TRUE`, unused factor levels are dropped.
+#' @param ... further arguments passed to [split()].
+#'
+#' @details
+#' `splitX` extends [split()] by providing:
+#' \itemize{
+#'   \item an S3 interface
+#'   \item a formula method for convenient specification of variables
+#'   \item support for multiple grouping variables via formula
+#' }
+#'
+#' The formula interface evaluates a [model.frame()] and splits
+#' the response variable by one or more grouping variables.
+#'
+#' If multiple grouping variables are provided, the data are split by their
+#' interaction (similar to `split(..., interaction(...))`).
+#'
+#' @return
+#' a list of subsets of `x`, grouped according to `f` or the
+#' grouping variables in the formula.
+#'
+#' @examples
+#' # Default usage
+#' x <- 1:10
+#' g <- rep(letters[1:2], each = 5)
+#' splitX(x, g)
+#'
+#' # Formula interface
+#' df <- data.frame(
+#'   y = rnorm(10),
+#'   g1 = rep(letters[1:2], each = 5),
+#'   g2 = rep(1:2, times = 5)
+#' )
+#'
+#' splitX(y ~ g1, data = df)
+#' splitX(y ~ g1 + g2, data = df)
+#'
+
+#' @family data.reshape
+#' @concept reshape
+#' @concept categorization
+#' @export
+splitX <- function(x, ...) {
+  UseMethod("splitX")
+}
+
+#' @rdname splitX
+#' @export
+splitX.default <- function(x, f, drop=FALSE, ...){
+  split(x=x, f=f, drop=drop, ...) 
+}
+
+
+# experimental: formula interface for split
+
+# raw early approach:
+# split.formula <- function(x, f, drop = FALSE, data = NULL, ...) {
+#   mf <- model.frame(x, data)
+#   f <- mf[,2]
+#   x <- mf[,1]
+#   split(x, f, drop=drop, ...)
+# }
+
+#' @rdname splitX
+#' @export
+splitX.formula <- function(formula, data, subset, na.action, drop=FALSE, ...){
+
+  if (missing(formula) || (length(formula) != 3L))
+    stop("'formula' missing or incorrect")
+
+  m <- match.call(expand.dots = FALSE)
+  m$drop  <- NULL
+  m$`...` <- NULL
+  if (is.matrix(eval(m$data, parent.frame())))
+    m$data <- as.data.frame(data)
+
+  m[[1L]] <- quote(stats::model.frame)
+
+  ## >>> IMPORTANT: Treat subset correctly due to collision with
+  ##                the subset function.
+  if (!missing(subset)) {
+    m$subset <- substitute(subset)  # capture the argument
+  } else {
+    m$subset <- NULL                # remove completely
+  }
+  # na.action remains in the call and is handled by model.frame()
+
+  mf <- eval(m, parent.frame())
+
+  DNAME <- gettextf("%s by %s (rows)", names(mf)[1],
+                    paste(names(mf)[-1], collapse=" : "))
+
+  ff <- mf[, -1]
+  if(ncol(mf[, -1, drop=FALSE]) > 1)
+    ff <- as.list(mf[, -1])
+
+  # now do the split
+  res <- split(x=mf[, 1], f=ff, drop=drop, ...)
+
+  # carry over na.action info from the model.frame (e.g. for na.exclude)
+  if (!is.null(attr(mf, "na.action")))
+    attr(res, "na.action") <- attr(mf, "na.action")
+
+  attr(res, "data.name") <- DNAME
+  return(res)
+
+}
+

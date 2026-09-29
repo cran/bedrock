@@ -1,0 +1,147 @@
+
+#' Load Excel Data with Metadata (Codes and Labels)
+#'
+#' Downloads an Excel file from a remote server and imports it as a data frame.
+#' Optionally processes a documentation sheet to assign variable labels and
+#' convert variables into factors with labeled levels.
+#'
+#' @param name character string. File name including extension (e.g. `"data.xlsx"`).
+#' @param url character string. Base URL where the file is located.
+#'   Defaults to `https://raw.githubusercontent.com/AndriSignorell/Teaching/main/data/`.
+#'   (see <https://github.com/AndriSignorell/Teaching/>)
+#'   
+#' @param doc list or `NA`. Defines the structure of the documentation sheet.
+#'   If `NULL`, the function tries to detect a sheet named `"Description"`.
+#'   If `NA`, no metadata processing is performed.
+#' @param ... additional arguments passed to `readxl::read_excel()`.
+#'
+#' @return
+#' a `data.frame` containing the imported data. If metadata is available:
+#' \itemize{
+#'   \item variables may be converted to factors (nominal/ordinal).
+#'   \item factor levels are labeled using provided codes.
+#'   \item variable labels are assigned using `label()`.
+#' }
+#'
+#' @details
+#' The function downloads the Excel file to a temporary location and reads the
+#' first sheet as the main dataset.
+#'
+#' If a documentation sheet is available, it is expected to contain columns such as:
+#' \itemize{
+#'   \item Variable name
+#'   \item Description (label)
+#'   \item Codes (e.g. "1=Male | 2=Female")
+#'   \item Scale ("nominal", "ordinal", etc.)
+#' }
+#'
+#' Variables with scale `"nominal"` or `"ordinal"` are converted to
+#' factors. Data values without a matching entry in the codes column become
+#' `NA`.
+#'
+#' @examples
+#' \donttest{
+#' # the file is downloaded from a remote repository, so the examples
+#' # need an internet connection and fail gracefully without one
+#'
+#' # load the dataset with automatic metadata detection
+#' try(openDataObject("beauty.xlsx"))
+#'
+#' # load it without metadata processing
+#' try(openDataObject("beauty.xlsx", doc = NA))
+#' }
+#'
+#'
+#' @family label.import
+#' @concept label
+#' @concept file.io
+#' @export
+openDataObject <- function(name, url = NULL, doc = NULL, ...) {
+
+  if (!requireNamespace("httr", quietly = TRUE) ||
+      !requireNamespace("readxl", quietly = TRUE))
+    stop("Packages 'httr' and 'readxl' are required for this function.")
+
+  if (is.null(url))
+    url <- "https://raw.githubusercontent.com/AndriSignorell/Teaching/main/data/"
+
+  fullUrl <- paste0(sub("/+$", "", url), "/", name)
+  
+  tf <- tempfile(fileext = ".xlsx")
+  
+  resp <- httr::GET(fullUrl, httr::write_disk(tf, overwrite = TRUE))
+  
+  if (httr::http_status(resp)$category != "Success") {
+    stop(sprintf("Download failed [%s]", httr::status_code(resp)))
+  }
+  
+  z <- as.data.frame(readxl::read_excel(tf))
+  
+  sheets <- readxl::excel_sheets(tf)
+  
+  if (is.null(doc)) {
+    if ("Description" %in% sheets)
+      doc <- list(Description = c("Variable", "Beschreibung", "Codes", "Skala"))
+    else
+      doc <- NA
+  }
+  
+  if (!isNA(doc)) {
+    
+    doc_sheet <- names(doc)
+    cols <- doc[[1]]
+    
+    code <- as.data.frame(readxl::read_excel(tf, sheet = doc_sheet))
+    
+    # trim trailing empty rows
+    emptyRows <- which(apply(code, 1, function(x) all(is.na(x))))
+    if (length(emptyRows) > 0) {
+      code <- code[seq_len(min(emptyRows) - 1), , drop = FALSE]
+    }
+    
+    col_var   <- cols[1]
+    col_lbl   <- cols[2]
+    col_code  <- cols[3]
+    col_scale <- cols[4]
+    
+    # define factors
+    id <- which(code[[col_scale]] %in% c("nominal", "ordinal"))
+    
+    if (length(id) > 0) {
+      
+      codes <- lapply(strsplit(code[[col_code]][id], "\r?\n"), function(x)
+        strsplit(x, "=")
+      )
+      names(codes) <- code[[col_var]][id]
+      
+      for (v in code[[col_var]][id]) {
+
+        z[[v]] <- factor(
+          z[[v]],
+          ordered = code[[col_scale]][code[[col_var]] == v] == "ordinal"
+        )
+
+        if (!is.null(codes[[v]]) && !all(is.na(unlist(codes[[v]])))) {
+
+          # note: data values without a matching code become NA
+          levels(z[[v]]) <- trimws(sapply(codes[[v]], `[`, 2))[
+            match(
+              levels(z[[v]]),
+              trimws(sapply(codes[[v]], `[`, 1))
+            )
+          ]
+        }
+      }
+    }
+    
+    # set variable labels
+    for (v in code[[col_var]]) {
+      lbl <- na.omit(code[[col_lbl]][code[[col_var]] == v])
+      if (length(lbl) == 1L)
+        label(z[[v]]) <- as.character(lbl)
+    }
+  }
+  
+  return(z)
+}
+

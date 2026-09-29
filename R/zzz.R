@@ -1,0 +1,22 @@
+
+
+.onLoad <- function(libname, pkgname) {
+  # presetting DescToolsX options not already defined by the user
+}
+
+
+#' @useDynLib bedrock, .registration = TRUE
+
+#' @importFrom Rcpp sourceCpp
+#' 
+#' @importFrom stats complete.cases na.omit quantile uniroot runif relevel filter is.ts na.exclude na.fail na.pass model.frame plogis qlogis as.formula contr.helmert contr.poly contr.sum contr.treatment xtabs aggregate
+#' 
+#' @importFrom utils combn modifyList tail browseURL find getAnywhere head help.search str capture.output as.roman read.table
+#'             
+#' @importFrom tools Rd_db file_ext
+#' @importFrom readxl excel_sheets read_excel
+#' @importFrom cli col_cyan col_blue style_bold
+#' @importFrom httr HEAD GET status_code timeout
+#'  
+NULL
+

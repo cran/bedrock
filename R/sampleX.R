@@ -1,0 +1,62 @@
+
+#' Random Samples and Permutations
+#'
+#' `sampleX` takes a sample of the specified size from the elements
+#' of `x`, with or without replacement. It does the same as
+#' [sample()] and additionally offers an interface for data
+#' frames, where rows are sampled.
+#'
+#' @name sampleX
+#' @param x either a vector of one or more elements from which to choose,
+#' or a positive integer, or a data frame whose rows are to be sampled.
+#' @param size a non-negative integer giving the number of items (or rows)
+#' to choose. If missing, it defaults to the number of elements of `x`
+#' (resp. `nrow(x)` for data frames), yielding a random permutation.
+#' @param replace logical; whether sampling is performed with replacement.
+#' @param prob a vector of probability weights for obtaining the elements
+#' (or rows) being sampled.
+#' @return sampled elements in the same structure as `x`; for data
+#' frames, a data frame containing the sampled rows.
+
+#' @examples
+#'
+#' sampleX(1:10, size = 5)
+#'
+#' # random permutation, like sample(x)
+#' sampleX(1:10)
+#'
+#' # sample rows of a data frame
+#' sampleX(mtcars, size = 5)
+#' 
+#' @seealso [sample()]
+#' @rdname sampleX
+#' @family combinatorics
+#' @concept sampling
+#' @concept combinatorics
+#' @export
+sampleX <-  function (x, size, replace = FALSE, prob = NULL) {
+  UseMethod("sampleX")
+}
+
+
+#' @rdname sampleX
+#' @export
+sampleX.data.frame <- function (x, size = nrow(x), replace = FALSE, prob = NULL) {
+
+  x[sample(nrow(x), size = size, replace = replace, prob = prob), , drop = FALSE]
+
+}
+
+
+#' @rdname sampleX
+#' @export
+sampleX.default <- function (x, size, replace = FALSE, prob = NULL) {
+
+  # forwarding a missing 'size' positionally would error inside
+  # base::sample(), unlike sample(x) itself -- so branch explicitly
+  if (missing(size))
+    base::sample(x, replace = replace, prob = prob)
+  else
+    base::sample(x, size = size, replace = replace, prob = prob)
+
+}

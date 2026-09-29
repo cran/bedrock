@@ -1,0 +1,88 @@
+
+#' Trim a Vector 
+#' 
+#' Clean data by means of trimming, i.e., by omitting outlying observations. 
+#' 
+#' A symmetrically trimmed vector `x` with a fraction of trim observations
+#' (resp. the given number) deleted from each end will be returned. If
+#' `trim` is set to a value \eqn{\ge 0.5} or to an integer value
+#' \eqn{\ge n/2} then the result will be `NA`. The same applies if
+#' `x` contains `NA`s and `na.rm` is `FALSE`.
+#' 
+#' @param x a numeric vector to be trimmed. 
+#' @param trim the fraction (0 to 0.5) of observations to be trimmed from each
+#' end of x. Values of trim outside that range (and < 1) are taken as the
+#' nearest endpoint.  If `trim` is set to a value >1 it's interpreted as
+#' the number of elements to be cut off at each tail of `x`. 
+#' @param na.rm a logical value indicating whether `NA` values should be
+#' stripped before the computation proceeds. 
+#' @return the trimmed vector `x`. The indices of the trimmed values will
+#' be attached as attribute named `"trim"`. 
+#' 
+#' @note This function is basically an excerpt from the base function
+#' [mean()], which allows the vector `x` to be trimmed before
+#' calculating the mean. 
+#' 
+#' @examples
+#' 
+#' ## generate data
+#' set.seed(1234)     # for reproducibility
+#' x <- rnorm(10)     # standard normal
+#' x[1] <- x[1] * 10  # introduce outlier
+#' 
+#' ## Trim data
+#' x
+#' trim(x, trim=0.1)
+#' 
+#' ## Trim fixed number, say cut the 3 extreme elements from each end
+#' trim(x, trim=3)
+#' 
+#' ## check function
+#' s <- sample(10:20)
+#' s.tr <- trim(s, trim = 2)
+#' setequal(c(s[attr(s.tr, "trim")], s.tr), s)
+#'
+#'
+#' @family vector.reshape
+#' @concept reshape
+#' @concept outlier-detection
+#' @export 
+trim <- function(x, trim = 0.1, na.rm = FALSE){
+  
+  if (na.rm) x <- x[!is.na(x)]
+  
+  if (!is.numeric(trim) || length(trim) != 1L)
+    stop("'trim' must be numeric of length one")
+  
+  n <- length(x)
+  
+  if (trim > 0 && n) {
+    if (is.complex(x))
+      stop("trim is not defined for complex data")
+    if (anyNA(x))
+      return(NA_real_)
+    if (trim >= 0.5 && trim < 1)
+      return(NA_real_)
+    if(trim < 1)
+      lo <- floor(n * trim) + 1
+    else{
+      trim <- floor(trim)
+      lo <- trim + 1
+      if (trim >= (n/2))
+        return(NA_real_)
+    }
+    hi <- n + 1 - lo
+    
+    res <- sort.int(x, index.return = TRUE)
+    # seq_len()/seq.int() instead of 1:(lo-1), which would yield c(1, 0)
+    # for lo = 1 and corrupt the trim attribute
+    trimi <- res[["ix"]][c(seq_len(lo - 1L),
+                           seq.int(from = hi + 1L, length.out = n - hi))]
+    
+    x <- res[["x"]][lo:hi][order(res[["ix"]][lo:hi])]
+    attr(x, "trim") <- trimi
+    
+  }
+  return(x)
+}
+

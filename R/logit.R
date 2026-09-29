@@ -1,0 +1,121 @@
+
+#' Logit Transformation and Its Inverse
+#'
+#' Computes the logit transformation and its inverse for values defined on a
+#' finite interval \eqn{[min, max]}.
+#'
+#' The `logit()` function maps values from \eqn{[min, max]} to the real
+#' line \eqn{(-\infty, \infty)}. The inverse transformation `logitInv()`
+#' maps real-valued inputs back to \eqn{[min, max]}.
+#'
+#' The logit transformation is defined as:
+#'
+#' \deqn{
+#' \mathrm{logit}(x) = \log\left(\frac{p}{1 - p}\right)
+#' }
+#'
+#' where
+#'
+#' \deqn{
+#' p = \frac{x - min}{max - min}.
+#' }
+#'
+#' For numerical stability, \eqn{p} is clamped to \eqn{[eps, 1 - eps]} before
+#' applying the transformation. This prevents returning `-Inf` or
+#' `Inf` for values exactly equal to `min` or `max`, or slightly
+#' outside the interval due to floating point error.
+#'
+#' If `warn = TRUE`, a warning is issued when such clamping occurs.
+#'
+#' The inverse transformation is given by:
+#'
+#' \deqn{
+#' x = min + (max - min) \cdot \frac{1}{1 + e^{-z}}
+#' }
+#'
+#' where \eqn{z} is the input to `logitInv()`.
+#'
+#' Note that `logitInv()` does not perform clamping. This asymmetry is
+#' intentional: [plogis()] is well-defined for all real inputs,
+#' so no stabilization is required.
+#'
+#' @param x numeric vector. For `logit()`, values are interpreted relative
+#'   to the interval \eqn{[min, max]}. For `logitInv()`, `x` can be any
+#'   real number.
+#' @param min lower bound of the interval. Must be finite.
+#' @param max upper bound of the interval. Must be finite and greater than `min`.
+#' @param eps small positive value used to clamp probabilities away from
+#'   \eqn{0} and \eqn{1} for numerical stability in `logit()`.
+#'   Default: `.Machine$double.eps`.
+#' @param warn logical; if `TRUE`, a warning is issued when values are
+#'   effectively clamped because they fall outside \eqn{(eps, 1 - eps)} after
+#'   rescaling. Default: `FALSE`.
+#'
+#' @return a numeric vector of the same length as `x`.
+#'
+#' @seealso [qlogis()], [plogis()]
+#'
+#' @examples
+#' x <- seq(0, 1, length.out = 5)
+#' z <- logit(x)
+#' logitInv(z)
+#'
+#' # Boundary values are clamped internally:
+#' # 0 -> eps, 1 -> 1 - eps
+#' logit(c(0, 0.5, 1))
+#'
+#' # With warn = TRUE, clamping at the boundaries triggers a warning
+#' logit(c(0, 0.5, 1), warn = TRUE)
+#'
+#' # Values strictly outside the interval also trigger a warning
+#' logit(c(-0.1, 0.5, 1.1), warn = TRUE)
+#'
+#' # Custom interval
+#' x <- seq(10, 20, length.out = 5)
+#' z <- logit(x, min = 10, max = 20)
+#' logitInv(z, min = 10, max = 20)
+#'
+#' @family math.transform
+#' @concept transformation
+#' @concept numerical-methods
+#' @export
+logit <- function(x, min = 0, max = 1,
+                  eps = .Machine$double.eps,
+                  warn = FALSE) {
+
+  if (!is.numeric(x))
+    stop("'x' must be numeric")
+
+  if (!is.finite(min) || !is.finite(max) || min >= max)
+    stop("'min' and 'max' must be finite with min < max")
+
+  p <- (x - min) / (max - min)
+
+  # warn exactly when the subsequent clamping changes a value
+  if (warn && any(p < eps | p > 1 - eps, na.rm = TRUE)) {
+    warning("Values outside (min, max) were clamped to avoid -Inf/Inf")
+  }
+
+  p <- pmin(pmax(p, eps), 1 - eps)
+
+  qlogis(p)
+}
+
+
+#' @rdname logit
+#' @family math.transform
+#' @concept transformation
+#' @concept numerical-methods
+#' @export
+logitInv <- function(x, min = 0, max = 1) {
+
+  if (!is.numeric(x))
+    stop("'x' must be numeric")
+
+  if (!is.finite(min) || !is.finite(max) || min >= max)
+    stop("'min' and 'max' must be finite with min < max")
+
+  p <- plogis(x)
+
+  p * (max - min) + min
+}

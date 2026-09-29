@@ -1,0 +1,23 @@
+
+#' Replace Values with NA
+#'
+#' Replaces specified values in a vector with `NA`, in the manner of
+#' SQL's `NULLIF`. This is the complementary operation to
+#' [coalesceX()].
+#'
+#' @param x a vector.
+#' @param values values to be replaced by `NA`.
+#'
+#' @return a vector of the same type as `x`.
+#'
+#' @examples
+#' naIf(c(1, 2, 99, 3, 99), 99)
+#' naIf(c("a", "b", "n/a", ""), c("n/a", ""))
+#'
+#' @family vector.na
+#' @concept missing-value
+#' @concept data-inspection
+#' @export
+naIf <- function(x, values) {
+  replace(x, x %in% values, NA)
+}

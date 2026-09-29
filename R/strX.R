@@ -1,0 +1,118 @@
+
+
+#' Extended str() with numbered variables
+#'
+#' Wrapper around [str()] that optionally numbers variables in
+#' lists and data frames. Useful for large objects where variables should
+#' be referenced by position.
+#'
+#' By default, only top-level elements are numbered. Recursive numbering
+#' of nested list elements can be enabled with `recursive = TRUE`.
+#'
+#' @param object any R object.
+#' @param ... additional arguments passed to [str()].
+#' @param enumerate logical; whether variables or elements are numbered.
+#'   Default is `TRUE`.
+#' @param recursive logical; whether nested list elements are also numbered.
+#'   Default is `FALSE`.
+#' @param strict.width character string passed to [str()].
+#'   Default is `"cut"`.
+#'
+#' @return
+#' invisibly returns the character vector produced by [str()].
+#'
+#' @examples
+#' # Data frame
+#' strX(mtcars)
+#'
+#' # Nested list
+#' x <- list(
+#'   a = 1,
+#'   b = list(
+#'     c = 2,
+#'     d = 3
+#'   )
+#' )
+#'
+#' strX(x)
+#'
+#' # Recursive numbering
+#' strX(x, recursive = TRUE)
+#' @seealso [str()]
+#' @concept data-inspection
+#' @concept introspection
+#' @export
+strX <- function(
+    object,
+    ...,
+    enumerate = TRUE,
+    recursive = FALSE,
+    strict.width = "cut"
+) {
+  
+  # ---- checks --------------------------------------------------------------
+  
+  stopifnot(
+    is.logical(enumerate),
+    length(enumerate) == 1L,
+    is.logical(recursive),
+    length(recursive) == 1L
+  )
+  
+  # ---- capture str output --------------------------------------------------
+  
+  out <- capture.output(
+    str(
+      object,
+      ...,
+      strict.width = strict.width
+    )
+  )
+  
+  # ---- numbering -----------------------------------------------------------
+  
+  if (
+    enumerate &&
+    (is.list(object) || is.data.frame(object))
+  ) {
+    
+    # str() marks nesting with dots: top level " $ ", nested " ..$ ",
+    # deeper "  .. ..$ " -- so the recursive pattern must allow dots
+    idx <- if (recursive) {
+      grep("^[ .]*\\$ ", out)
+    } else {
+      grep("^ \\$ ", out)
+    }
+    
+    if (length(idx)) {
+      
+      width <- nchar(length(idx))
+      
+      out[idx] <- mapply(
+        FUN = function(line, i) {
+          
+          num <- sprintf(
+            paste0("%", width, "d"),
+            i
+          )
+          
+          sub(
+            "^([ .]*)\\$",
+            paste0("\\1", num, " $"),
+            line
+          )
+        },
+        line = out[idx],
+        i = seq_along(idx),
+        USE.NAMES = FALSE
+      )
+    }
+  }
+  
+  # ---- print ---------------------------------------------------------------
+  
+  cat(out, sep = "\n")
+  
+  invisible(out)
+}
+

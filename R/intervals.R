@@ -1,0 +1,152 @@
+
+
+#' Interval Arithmetic
+#'
+#' Functions for computing relationships between numeric intervals.
+#' All functions accept intervals as numeric vectors of length 2 or matrices
+#' with 2 columns (one interval per row). Unordered bounds are silently
+#' sorted; rows are recycled to equal length.
+#'
+#' @param x a numeric vector of length 2 `c(lower, upper)`, or a
+#'   numeric matrix with 2 columns where each row defines one interval.
+#' @param y a numeric vector of length 2 `c(lower, upper)`, or a
+#'   numeric matrix with 2 columns where each row defines one interval.
+#'
+#' @return
+#' \describe{
+#'   \item{`overlap`}{numeric vector of overlap lengths (0 if no overlap).}
+#'   \item{`overlaps`}{logical vector; `TRUE` if intervals share at
+#'     least one point.}
+#'   \item{`distance`}{numeric vector of gap lengths between non-overlapping
+#'     intervals (0 if overlapping or touching).}
+#'   \item{`%overlaps%`}{logical vector; operator wrapper for
+#'     `overlaps()`.}
+#' }
+#'
+#' @details
+#' Intervals are treated as closed, i.e., \eqn{[a, b]}. Consequently:
+#' \itemize{
+#'   \item Two intervals sharing only a boundary point have `overlap` 0
+#'     but `overlaps` returns `TRUE`.
+#'   \item `distance` returns 0 whenever intervals touch or overlap.
+#'   \item The returned vector is always unnamed, whatever dimnames the
+#'     inputs carry.
+#' }
+#'
+#' @examples
+#' # overlap length
+#' overlap(c(1, 5), c(3, 7))   # 2
+#' overlap(c(1, 3), c(3, 5))   # 0 (boundary only)
+#'
+#' # overlap check
+#' overlaps(c(1, 5), c(3, 7))  # TRUE
+#' overlaps(c(1, 3), c(3, 5))  # TRUE  (boundary counts)
+#' overlaps(c(1, 2), c(3, 4))  # FALSE
+#'
+#' # gap distance
+#' distance(c(1, 2), c(4, 5))  # 2
+#' distance(c(1, 5), c(3, 7))  # 0
+#'
+#' # operator
+#' c(1, 5) %overlaps% c(3, 7)  # TRUE
+#'
+#' # vectorised (matrix input)
+#' m <- matrix(c(1,3, 2,6, 5,8), ncol = 2, byrow = TRUE)
+#' overlap(m, c(4, 7))
+#'
+#' @name intervals
+#' @family data.interval
+#' @concept range
+#' @concept overlap
+NULL
+
+#' @rdname intervals
+#' @export
+overlap <- function(x, y) {
+  dat <- .intervalEngine(x, y)
+  x <- dat$x; y <- dat$y
+  
+  ov <- pmin(x[,2], y[,2]) - pmax(x[,1], y[,1])
+  ov[ov < 0] <- 0
+  
+  ov
+}
+
+#' @rdname intervals
+#' @export
+overlaps <- function(x, y) {
+  dat <- .intervalEngine(x, y)
+  x <- dat$x; y <- dat$y
+  
+  !(x[,2] < y[,1] | y[,2] < x[,1])
+}
+
+#' @rdname intervals
+#' @export
+distance <- function(x, y) {
+  dat <- .intervalEngine(x, y)
+  x <- dat$x; y <- dat$y
+  
+  d <- pmax(
+    y[,1] - x[,2],
+    x[,1] - y[,2],
+    0
+  )
+  
+  d
+}
+
+
+#' @rdname intervals
+#' @export
+`%overlaps%` <- function(x, y) {
+  overlaps(x, y)
+}
+
+
+
+# == internal helper functions ============================================
+
+
+#' Normalize and recycle interval inputs
+#'
+#' Internal helper to ensure intervals are ordered (min, max)
+#' and recycled to equal length.
+#'
+#' @param x numeric vector or matrix with 2 columns.
+#' @param y numeric vector or matrix with 2 columns.
+#'
+#' @return a list with normalized, unnamed and recycled matrices `x` and `y`.
+#' @noRd
+.intervalEngine <- function(x, y) {
+
+  toMat <- function(z, name) {
+    if (is.null(dim(z))) {
+      # is.null(dim()) instead of is.vector(): the latter fails for
+      # vectors carrying attributes (e.g. a label)
+      if (length(z) != 2L)
+        stop(sprintf("'%s' must be a vector of length 2 or a matrix with 2 columns.", name))
+      z <- matrix(z, ncol = 2, byrow = TRUE)
+    }
+    z
+  }
+  x <- toMat(x, "x")
+  y <- toMat(y, "y")
+  
+  if (ncol(x) != 2L || ncol(y) != 2L) {
+    stop("x and y must have exactly 2 columns (interval bounds).")
+  }
+  
+  # ensure ordering, and drop dimnames here rather than in each exported
+  # function: which operand's names would survive pmin()/cbind() depends
+  # on the argument order, so they are not a contract worth keeping
+  x <- unname(cbind(pmin(x[,1], x[,2]), pmax(x[,1], x[,2])))
+  y <- unname(cbind(pmin(y[,1], y[,2]), pmax(y[,1], y[,2])))
+  
+  # recycle rows
+  n <- max(nrow(x), nrow(y))
+  x <- x[rep(seq_len(nrow(x)), length.out = n), , drop = FALSE]
+  y <- y[rep(seq_len(nrow(y)), length.out = n), , drop = FALSE]
+  
+  list(x = x, y = y)
+}

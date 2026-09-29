@@ -1,0 +1,46 @@
+#' Rotate a vector
+#'
+#' Rotates a vector cyclically to the right by `k` positions.
+#' Negative values of `k` rotate to the left.
+#'
+#' @param x a vector.
+#' @param k integer. Number of positions to rotate (default = 1).
+#'
+#' @return a vector of the same length as `x`, rotated cyclically.
+#'
+#' @details
+#' The rotation is cyclic, meaning elements shifted off one end reappear on the other.
+#'
+#' @examples
+#' vRot(1:5, 2)
+#' # 4 5 1 2 3
+#'
+#' vRot(1:5, -1)
+#' # 2 3 4 5 1
+#'
+
+
+#' @family vector.reshape
+#' @concept shift
+#' @concept reshape
+#' @export
+vRot <- function(x, k = 1L) {
+
+  n <- length(x)
+  if (n == 0L) return(x)
+
+  if (!is.numeric(k) || length(k) != 1L || is.na(k))
+    stop("'k' must be a single number.")
+
+  if (k != round(k)) {
+    k <- round(k)
+    warning("'k' is not an integer")
+  }
+  
+  k <- k %% n
+  
+  if (k == 0L) return(x)
+  
+  c(tail(x, k), head(x, n - k))
+}
+
