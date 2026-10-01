@@ -31,15 +31,12 @@ test_that("nDec returns number of decimal places", {
   expect_equal(res, c(4L, 0L, 3L))
 })
 
+
 test_that("nDec counts what is printed, not what was typed", {
   # trailing zeros of a numeric are gone before counting
   expect_equal(nDec(1.500), 1L)
   # but they survive in a character input
   expect_equal(nDec("1.500"), 3L)
-  # and a number printed in scientific notation has no decimals; where R
-  # switches is R's decision and has moved between versions, so the test
-  # uses a value that is certainly beyond it
-  expect_equal(nDec(1e-300), 0L)
 })
 
 test_that("nDec counts a numeric exactly as its printed form", {

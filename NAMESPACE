@@ -73,6 +73,8 @@ export(combPairs)
 export(combSet)
 export(compareDataFrames)
 export(completeColumns)
+export(conceptAudit)
+export(conceptMap)
 export(countCompCases)
 export(courseData)
 export(crossProd)
@@ -97,6 +99,7 @@ export(funArgs)
 export(funCalls)
 export(funKeywords)
 export(funList)
+export(getConcepts)
 export(getDotsArg)
 export(hexToDec)
 export(int)
@@ -160,6 +163,7 @@ export(removeAttr)
 export(renameX)
 export(resolveContingency)
 export(resolveFormula)
+export(resolveFormulaFromCall)
 export(resolveGroups)
 export(revCode)
 export(revX)
@@ -209,6 +213,7 @@ importFrom(readxl,
 importFrom(stats,
   aggregate,
   as.formula,
+  ave,
   complete.cases,
   contr.helmert,
   contr.poly,

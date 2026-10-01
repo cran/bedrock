@@ -1,6 +1,6 @@
-65c088076adf883179099be467691b1e *DESCRIPTION
-6224fdc9692ee30b4a35a9538a0e8693 *NAMESPACE
-3ed7a4c8251b89b8ea6e8e565646f0b9 *NEWS.md
+b289474b6c6866fcd5bbf6bb0260ba6d *DESCRIPTION
+146a5ffbaaafd0d423e58d73873383f3 *NAMESPACE
+8763c78421c507ec879b4a421cef2c83 *NEWS.md
 8eccf84d26f84318ddf5b53afb5a8ce1 *R/GCD-LCM.R
 62fdd976edc22e7211fa5b1cc55ecd97 *R/RcppExports.R
 22b39b5a9869e13e4b371b86c27d8648 *R/allDuplicated.R
@@ -8,7 +8,7 @@
 d5dfa51625e4e842fad5c6c2b52d5f93 *R/appendEnum.R
 7a9feea308686ac591c0be73adcc3a1f *R/appendRowNames.R
 e7b89c13ca58a5642142837338f0c8cf *R/appendX.R
-db7743d9d50e9d750e92e2644c2db15e *R/applySides.R
+dc1cdcea7f78a995a899f9fee7061f1c *R/applySides.R
 0cd088ed65e4defad204388b48a87892 *R/as.matrix.xtabs.R
 dd79e1be13e220b6497789722e6541fa *R/asBinary.R
 6f106a6ff25ad3594289a287fb308760 *R/asCDateFmt.R
@@ -28,6 +28,7 @@ fa31420d712019677795ef0c64c946ba *R/combPairs.R
 3135305ceb7c89c72be3088278409b06 *R/combSet.R
 c0768ac34eaa0066ba28f08663702d3a *R/compareDataFrames.R
 f2254124100d6360a91aece58c16bcff *R/completeColumns.R
+7e5c75d8f5eb34b202af09f5525c9519 *R/concepts.R
 0fdb8de1a732215b84907c2ee95c90e2 *R/countCompCases.R
 b764f1e707b76d8a7e423f7850f163fe *R/courseData.R
 750ab33dde83d67ddd6a3ddb6d56fb02 *R/crossProd.R
@@ -51,7 +52,6 @@ bd9cc13e38fd1ab10d9e3d325969fd60 *R/funArgs.R
 31914ee005423a6c53f1e39c3af86840 *R/funCalls.R
 c67401c3a71486bc08c9c649d4e6ce38 *R/funKeywords.R
 be53bb6a0b79973c9b0153b9522f963f *R/funList.R
-35457652cd225d2d8cac90fb25ae5eb6 *R/getConcepts.R
 1e49285f3b44a1d8ca426752f36802c1 *R/getDotsArg.R
 96e8a16ece3412edfc97294f38f00139 *R/getTopics.R
 aae6c6f5a3d06196e4683d0e7484e905 *R/intervals.R
@@ -104,8 +104,8 @@ fc1679a334742a6b4b0d0e30a1801498 *R/recodeX.R
 f6c829be3db2579f9ebc3b6ea2c5a371 *R/recycle.R
 bb11a6ab11bba1207f267bcb27eee52d *R/reexports.R
 26fe5272fab8777e293b148d852f56ed *R/renameX.R
-0a46735a5f32bb0fa0fab2a965eac19f *R/resolveContingency.R
-9a9338659cbdd5b86612609139fc579b *R/resolveFormula.R
+ad47e7904328c7020140b8e6e6ba6d95 *R/resolveContingency.R
+b16896dcd2210b3217857d7bb9be5ee5 *R/resolveFormula.R
 0613bc45d46f4f831b731b62c4525e90 *R/resolveGroups.R
 277ec7c14cff55b44aa4ab4382ce4710 *R/revCode.R
 193bf5b6b88ebdd8e98da9638df8b759 *R/revX.R
@@ -120,7 +120,7 @@ b11419e7a3542d8e3cce6b10556d7a2c *R/splitPath.R
 4fe072df4548874bd87a353aaed45d9a *R/splitX.R
 198c3bbf38cb838ce7dc2976d316a812 *R/strSplitToCol.R
 cb77d0fbb2aebc0dcb897fb71b9a3957 *R/strSplitToDummy.R
-8e164214cb51ef223b761c30e1c4feb1 *R/strX.R
+6ab53003a91f39380ed275d5402bd724 *R/strX.R
 316536adbaee0d6c081197f88fbb0ec8 *R/stringsAsFactors.R
 92a778af4d3c95f84ad3f7cd415b1cfb *R/toBaseR.R
 338c960150b7bd70fdb3653cb8807606 *R/toLongWide.R
@@ -134,7 +134,7 @@ f913cf4770e0e47e54fc0f8ead2d9d7b *R/vRot.R
 2b405fdec534c318cb88be8c1bb2c614 *R/vShift.R
 d0bcff9a8a1e3be4be3bcbb617f4c6f6 *R/winsorize.R
 db28275097ffc655725f04155a97c700 *R/withSeed.R
-068e428e76d1f31edcec40f3838079ec *R/zzz.R
+1d33762a731e2e3b451396d0fbef9b4e *R/zzz.R
 682df5ce38c5d78af41900906e25ede7 *README.md
 6ed0bcbbf3a23bce3f65dd92b0d2aaf7 *build/vignette.rds
 aebe7a902b437a25f834c2e362570535 *data/Pizza.rda
@@ -154,7 +154,7 @@ eaaea64dbf1b0af5061a846ee5c633b9 *man/allDuplicated.Rd
 9c1d636a5335eb580abbbf813ea1915e *man/appendEnum.Rd
 6bb325416e3d754bcc7553be7bf9db1e *man/appendRowNames.Rd
 2b96bd3f905e28f1bc3d15efc1c7f21b *man/appendX.Rd
-c927572239492cd343aa332e289bddae *man/applySides.Rd
+a90b54347e865f75420c7f019f7d5100 *man/applySides.Rd
 f255beda7eb009e1a076b047716abf37 *man/as.array.xtabs.Rd
 ef8264fb243bc3049ab4803cca0919a7 *man/asBinary.Rd
 47589de11e8bcb55800c23a99c004fbc *man/asCDateFmt.Rd
@@ -177,6 +177,7 @@ fa1c85c2e08875137d3d8cd4c311008f *man/checkString.Rd
 b0a0766159e69dd9f35a423177983116 *man/combSet.Rd
 dd6cb8d29dde93e53f59939fb8fcd929 *man/compareDataFrames.Rd
 0d2425b61346cdc3bb48a503c58edc4e *man/completeColumns.Rd
+5b56354cb30a8ae2fb03da70af3c1144 *man/concepts.Rd
 6d63d8f1192cb32a013bceed01c56352 *man/countCompCases.Rd
 fdcba55faa48bb915bb360dcec659ed9 *man/courseData.Rd
 827ae724b592dfaf73f54ffd866e5097 *man/crossProd.Rd
@@ -251,8 +252,8 @@ ee161eaddfe24a0cab953050ecf5e845 *man/rankX.Rd
 05aba0e841dbbe194f7110cdc5ada026 *man/recycle.Rd
 1df5c031b111002aea16df63795302e7 *man/reexports.Rd
 3889d32156f6954f487bad7cb086d1cf *man/renameX.Rd
-a9f56c56dbf7c524e0aa704cd66e9cb0 *man/resolveContingency.Rd
-6eb116ac25d84d7b8c2d288f80126d58 *man/resolveFormula.Rd
+27285c32579a3befe42bf76dae407bfa *man/resolveContingency.Rd
+ca295a87741ab55b364dec515c428d54 *man/resolveFormula.Rd
 ea8b51d758ba8015fe83751f04b6062c *man/resolveGroups.Rd
 f8cfba6a789a36ae1dcca144c372b111 *man/revCode.Rd
 378adda1ab2079d4e50072eec5bc7c9c *man/revX.Rd
@@ -267,7 +268,7 @@ d2b5e68e4baa651f39a2fb89d355c71e *man/splitPath.Rd
 5f4e2bbceb9fd580235815f26cf3c492 *man/splitX.Rd
 3af19868c797d21825beec6a4f9700d6 *man/strSplitToCol.Rd
 23aee52f486dd671bd45efc6ac7b805f *man/strSplitToDummy.Rd
-8cfa54e01d10bf2a6e0d12dadc1b5f65 *man/strX.Rd
+274859b0ce8239729a33b33649db44fd *man/strX.Rd
 dead9064bf3f33b7ba9274dec2b1be9f *man/stringsAsFactors.Rd
 57a8411c6e36ad0508b6a2325fcbdefc *man/toBaseR.Rd
 1d9cd1a3520b5fe33611c73aa7b0b0a9 *man/trim.Rd
@@ -316,6 +317,7 @@ d05ace598e8023cbaf08d1e7c9e27db5 *tests/testthat/test-coalesceX.R
 c16829a29b0050907ecad26cdd3c60ac *tests/testthat/test-combSet.R
 fcbb245fa5159fc19c56b00ed51ba76f *tests/testthat/test-compareDataFrames.R
 3015b1e522fff7949e0724eb3c48998e *tests/testthat/test-completeColumns.R
+b87a2570162ccc0caae8389147bb0c51 *tests/testthat/test-concepts.R
 1f3e440878212bd5ee1c2e8613fd7699 *tests/testthat/test-countCompCases.R
 64e52df59417ea3d3176b9b48bfcb00c *tests/testthat/test-course.R
 b287d89d65ad101c74c71dfa5e556cff *tests/testthat/test-crossProd.R
@@ -335,7 +337,6 @@ e373b8fbd719fd91bfdea7c3c8a9d924 *tests/testthat/test-fibonacci.R
 9e467371c253d71388f556c027436ac2 *tests/testthat/test-funCalls.R
 b6621e8ac8aa1680e89ade0bcf933d53 *tests/testthat/test-funKeywords.R
 bdc6b5fa49a7c3de7e14d5233b991871 *tests/testthat/test-funList.R
-b87a2570162ccc0caae8389147bb0c51 *tests/testthat/test-getConcepts.R
 1c2d75bac00c6b70cbed819f2c12c55a *tests/testthat/test-getDotsArg.R
 fcb6db4ac6076923bfd80541676456f0 *tests/testthat/test-getTopics.R
 c2ae6d464e097b75aa02b7334ab6a050 *tests/testthat/test-intervals.R
@@ -370,9 +371,9 @@ d3487b17f011f9b0933fd9b798e485d5 *tests/testthat/test-parseSASDatalines.R
 94c0b20d1ff7c258e8d60eee1ebe0107 *tests/testthat/test-peekFile.R
 8ac3147aaa7d150d652aa85d1d6f334f *tests/testthat/test-percentRank.R
 07828cee69c55a73e4395293f414b43d *tests/testthat/test-permn.R
-7c766e4d635335b1087d1053fd52bf81 *tests/testthat/test-precision.R
+1062d0844e258639258760bee5e6bf00 *tests/testthat/test-precision.R
 ed51ad0dde9543185cb874a7daf49c1a *tests/testthat/test-primes.R
-c9b6269ba07aaffd27d61e71e9520568 *tests/testthat/test-printCharMatrix.R
+3cf30ef813f57e3d9b2b2642af72c198 *tests/testthat/test-printCharMatrix.R
 17b78dd87452a0cf309a468cff7e5827 *tests/testthat/test-ptInPoly.R
 767537c16b412231ee3dd45ec682761d *tests/testthat/test-quot.R
 25fc1d41742957e84cab6e95c21b2b2b *tests/testthat/test-rBetaShape.R
@@ -383,19 +384,17 @@ efd62c20dae0ca090de4601e69078579 *tests/testthat/test-rankX.R
 4aad04e00a2a97d2b1a79a8ffe60df6e *tests/testthat/test-rdLabels.R
 f7f3989d29a3571460ad14078b292249 *tests/testthat/test-rdTitle.R
 391a7f42cb9f44bdbd2f320f83d60eac *tests/testthat/test-recodeX.R
-892aa3aa24a50d058e90277114d64f01 *tests/testthat/test-recycle.R
-2118245a8e38f7be114cc6b0e0321cb6 *tests/testthat/test-recyle.R
+875a19d7c88ac0f86a21a66d35459501 *tests/testthat/test-recycle.R
 bb9683be65c94450919c4047b4fc49f8 *tests/testthat/test-renameX.R
 97616ffdaf9eea604f06ddde2fcdb1ea *tests/testthat/test-resolveContingency.R
-8f92795b4eeeca21281f061cfd31e2d3 *tests/testthat/test-resolveFormula.R
+3c8f270b4f4977bed372de8a88a1dc97 *tests/testthat/test-resolveFormula.R
 f76164cc947bf0d229b1dc0768569f54 *tests/testthat/test-resolveGroups.R
 dcbf90d5d612e6d14a5bc8c95fd7b4b0 *tests/testthat/test-revCode.R
 218a2b59b90cf32069d2449855b54c6a *tests/testthat/test-revX.R
 bf271c9cdb439d56805071e5c0991ab6 *tests/testthat/test-romanToInt.R
 03460c0118fd06d96b97451309c40f9e *tests/testthat/test-roundTo.R
 72f271883eaf3b2490c0880809e5e5ab *tests/testthat/test-sampleX.R
-f032a8a48e9d503e3ff0b93601e7b43f *tests/testthat/test-set-and-remove-attributes.R
-f55777e9c14101bee6ef9b9620f46090 *tests/testthat/test-set-remove-keep-attr.R
+8a50af932e2f82812d3e98f0e78be4cb *tests/testthat/test-set-remove-keep-attr.R
 1b13c5721f8068e6a2b7e99520a88643 *tests/testthat/test-setLength.R
 a9e5fa3ad377e18889baa4e61a9a1bbd *tests/testthat/test-setNamesX.R
 51f602b0616a828bac0c3393205bf174 *tests/testthat/test-sortX.R
@@ -404,7 +403,7 @@ a9e5fa3ad377e18889baa4e61a9a1bbd *tests/testthat/test-setNamesX.R
 0215d7efbeaff89a59d3bcf7ece889ab *tests/testthat/test-splitX.R
 613e2b4a80d75edc5739c4370d44c381 *tests/testthat/test-strSplitToCol.R
 868cd3c1adc672ba329f4bc30e638216 *tests/testthat/test-strSplitToDummy.R
-bcc68eb8a7a98fed356a172a3121dcd8 *tests/testthat/test-strX.R
+2db5541b826780df8aa79da4e24ba46f *tests/testthat/test-strX.R
 8de1e820c7304dab7574c645dda358c2 *tests/testthat/test-stringsAsFactors.R
 91a471be59d8a47e0e09284bec51916a *tests/testthat/test-toBaseR.R
 e1d246e57b040ad095c00398dbfb72b3 *tests/testthat/test-toLong.R
@@ -414,9 +413,7 @@ b22cd7a52c4c65bd46d69d13a5101de4 *tests/testthat/test-type-aliases.R
 fa228dadae724ff76235ddb14fbbd7aa *tests/testthat/test-unirootAll.R
 53c2d9cd55b90ee890d36d9102bae647 *tests/testthat/test-untable.R
 df0747568daf504c3e4acc8bacbcb021 *tests/testthat/test-unwhich.R
-72eede271d1bc4f6d48c5e9f870fb96b *tests/testthat/test-vRot-vShift.R
-adae2ed7f9a7bfe590a85e8bfabb475c *tests/testthat/test-vRot.R
-76b5b8d3d077740ef061ca21707bbc0d *tests/testthat/test-vShift.R
+981b18b1b43a17727b3876407a6df41a *tests/testthat/test-vRot-vShift.R
 9b4696f1dd18b8ed8ddea6ded0427b08 *tests/testthat/test-winsorize.R
 9eed9cb52175023baf1cca814d446ae6 *tests/testthat/test-withSeed.R
 3f838d97250a0966c08c9074a17b854a *tests/testthat/testdata/fixture.xlsx
