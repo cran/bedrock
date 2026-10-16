@@ -66,7 +66,7 @@ Predicates and checks for data quality and structure.
 -   `allDuplicated()`, `allIdentical()`, `completeColumns()`,
     `countCompCases()`, `flags()`
 -   Between operators: `%[]%`, `%()%`, `%[)%`, `%(]%`
--   `isFilePath()`, `isURL()`, `isEuclid()`
+-   `isFilePath()`, `isUrl()`, `isEuclid()`
 
 ### 🔹 Vector Operations
 
@@ -113,8 +113,8 @@ Predicates and checks for data quality and structure.
 
 -   `buildPath()`, `splitPath()`
 -   `findDownload()`, `readDownload()`, `peekFile()`
--   `fileExistURL()`, `pdfManual()`
--   `parseSASDatalines()` — parse SAS DATALINES blocks into a
+-   `urlExists()`, `pdfManual()`
+-   `parseSasDatalines()` — parse SAS DATALINES blocks into a
     data.frame
 
 ### 🔹 Programming & Introspection
@@ -127,7 +127,7 @@ Predicates and checks for data quality and structure.
 ### 🔹 Datasets
 
 Teaching and example datasets: `Cards`, `Pizza`, `Roulette`, `Tarot`,
-plus `courseData()` for loading course material.
+plus `readCourseData()` for loading course material.
 
 ## 🚀 Design Principles
 
@@ -166,7 +166,7 @@ sas <- "
   Bob   25 88.0
   ;
 "
-parseSASDatalines(sas)
+parseSasDatalines(sas)
 ```
 
 ## 🙏 Acknowledgements
